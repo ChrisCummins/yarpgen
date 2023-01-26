@@ -437,19 +437,6 @@ void emitSYCLAccessors(std::shared_ptr<EmitCtx> ctx, std::ostream &stream,
 void ProgramGenerator::emitTest(std::shared_ptr<EmitCtx> ctx,
                                 std::ostream &stream) {
     Options &options = Options::getInstance();
-    stream << "#include \"init.h\"\n";
-    if (options.isC()) {
-        MinCall::emitCDefinition(ctx, stream);
-        MaxCall::emitCDefinition(ctx, stream);
-    }
-    if (options.isCXX())
-        stream << "#include <algorithm>\n";
-    else if (options.isSYCL()) {
-        stream << "#include <CL/sycl.hpp>\n";
-        stream << "#if defined(FPGA) || defined(FPGA_EMULATOR)\n";
-        stream << "    #include <CL/sycl/intel/fpga_extensions.hpp>\n";
-        stream << "#endif\n";
-    }
 
     if (options.isISPC()) {
         ctx->setIspcTypes(true);

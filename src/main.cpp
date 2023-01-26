@@ -40,7 +40,26 @@ int main(int argc, char *argv[]) {
     }
 
     ProgramGenerator new_program;
-    new_program.emit();
+
+    // NOTE(cummins): Quick hack to dump the test function and external
+    // declarations to stdout.
+    auto emit_ctx = std::make_shared<EmitCtx>();
+
+    if (options.isC()) {
+        MinCall::emitCDefinition(emit_ctx, std::cout);
+        MaxCall::emitCDefinition(emit_ctx, std::cout);
+    }
+    if (options.isCXX())
+        std::cout << "#include <algorithm>\n";
+    else if (options.isSYCL()) {
+        std::cout << "#include <CL/sycl.hpp>\n";
+        std::cout << "#if defined(FPGA) || defined(FPGA_EMULATOR)\n";
+        std::cout << "    #include <CL/sycl/intel/fpga_extensions.hpp>\n";
+        std::cout << "#endif\n";
+    }
+
+    new_program.emitExtDecl(emit_ctx, std::cout);
+    new_program.emitTest(emit_ctx, std::cout);
 
     return 0;
 }
